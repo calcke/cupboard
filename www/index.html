@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Cupboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{--bg:#f6f7f9;--sf:#fff;--tx:#14181f;--mu:#69727f;--bd:#dfe3e9;--em:#e6e9ee;--ac:#0fa57e;--idea:#e9a21b;--building:#3b7cf0;--live:#0fa57e;--shelved:#8d95a1;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0b0d11;--sf:#141820;--tx:#eceff4;--mu:#8a93a3;--bd:#232936;--em:#1b212b;--ac:#2dd4a7;--idea:#f5b942;--building:#5b95ff;--live:#2dd4a7;--shelved:#7a8391}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0b0d11;--sf:#141820;--tx:#eceff4;--mu:#8a93a3;--bd:#232936;--em:#1b212b;--ac:#2dd4a7;--idea:#f5b942;--building:#5b95ff;--live:#2dd4a7;--shelved:#7a8391}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:560px;margin:0 auto;padding:16px 16px 80px}
+h1{font-size:26px;margin:6px 0 2px;letter-spacing:-.5px}
+.sub{color:var(--mu);margin:0 0 14px}
+.tabs{display:flex;gap:6px;background:var(--em);padding:4px;border-radius:14px;margin-bottom:16px}
+.tabs button{flex:1;border:0;background:none;color:var(--mu);padding:10px;border-radius:10px;font:inherit;font-weight:600}
+.tabs button.on{background:var(--sf);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:18px;padding:14px;margin-bottom:14px}
+.stats{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--mu);margin-bottom:10px}
+.stats b{color:var(--tx)}
+.bar{height:8px;background:var(--em);border-radius:8px;overflow:hidden;margin-bottom:12px}
+.bar i{display:block;height:100%;background:var(--ac);width:0}
+.map{display:grid;grid-template-columns:repeat(26,1fr);gap:2px}
+.map button{aspect-ratio:1;border:0;border-radius:3px;background:var(--em);padding:0}
+.map button.sel{outline:2px solid var(--tx);outline-offset:1px}
+.s-idea{background:var(--idea)!important}.s-building{background:var(--building)!important}.s-live{background:var(--live)!important}.s-shelved{background:var(--shelved)!important}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--mu);margin-top:10px}
+.legend span:before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;background:var(--c)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:6px}
+.chips button{flex:none;min-width:40px;border:1px solid var(--bd);background:var(--sf);color:var(--tx);border-radius:10px;padding:7px 8px;font:inherit;font-weight:700;text-transform:uppercase}
+.chips button.on{background:var(--tx);color:var(--bg)}
+.chips button small{display:block;font-size:10px;font-weight:500;opacity:.7}
+.shelf{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.slot{border:1px dashed var(--bd);background:var(--sf);color:var(--mu);border-radius:14px;padding:10px 6px;text-align:center;font:inherit;min-height:74px;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.slot b{font-size:20px;letter-spacing:1px;text-transform:uppercase;color:var(--tx)}
+.slot span{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slot.f{border:2px solid var(--c);border-style:solid;background:var(--sf)}
+.slot.empty b{opacity:.35}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;z-index:20}
+.sheet.show{display:flex}
+.panel{background:var(--sf);width:100%;max-width:560px;margin:0 auto;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));max-height:92%;overflow:auto}
+.panel h2{margin:0 0 10px;font-size:30px;text-transform:uppercase;letter-spacing:2px}
+input,textarea{width:100%;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:12px;padding:11px 12px;font:inherit;margin-bottom:10px}
+textarea{min-height:110px;resize:vertical}
+.st{display:flex;gap:6px;margin-bottom:10px}
+.st button{flex:1;border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:10px;padding:9px 2px;font:inherit;font-size:13px}
+.st button.on{background:var(--c);border-color:var(--c);color:#fff;font-weight:700}
+.row{display:flex;gap:8px}
+.btn{flex:1;border:0;border-radius:12px;padding:12px;font:inherit;font-weight:700;background:var(--ac);color:#fff}
+.btn.g{background:var(--em);color:var(--tx);flex:none;padding:12px 16px}
+.e{border-left:3px solid var(--ac);padding:4px 0 4px 12px;margin-bottom:16px}
+.e time{font-size:12px;color:var(--mu)}
+.e p{margin:4px 0;white-space:pre-wrap}
+.tag{display:inline-block;background:var(--em);border-radius:8px;padding:1px 8px;font-size:12px;font-weight:700;text-transform:uppercase;margin-right:4px;border:0;color:var(--tx)}
+.x{border:0;background:none;color:var(--mu);font-size:12px;padding:0}
+.note{font-size:12px;color:var(--mu);text-align:center;margin-top:18px}
+.cv{width:100%;border-radius:16px;display:block;border:1px solid var(--bd);margin-bottom:10px}
+.noimg .ph{display:none}
+.fx{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--bd)}
+.fx span{flex:1}.fx .dn{text-decoration:line-through;color:var(--mu)}
+.ck{width:26px;height:26px;border-radius:8px;border:2px solid var(--bd);background:var(--bg);color:#fff;font-weight:800;padding:0}
+.ck.on{background:var(--ac);border-color:var(--ac)}
+.btn.ph{display:flex;align-items:center;justify-content:center;cursor:pointer}
+.toast{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;z-index:30}
+.toast button{background:var(--tx);color:var(--bg);border:0;border-radius:999px;padding:12px 20px;font:inherit;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+</style>
+</head>
+<body>
+<main>
+  <h1>The Cupboard</h1>
+  <p class="sub">676 possible two-letter projects. Fill every drawer.</p>
+  <div class="tabs"><button id="t1" class="on">Cupboard</button><button id="t2">Journey</button><button id="t3">Share</button></div>
+
+  <section id="v1">
+    <div class="card">
+      <div class="stats" id="stats"></div>
+      <div class="bar"><i id="bar"></i></div>
+      <div class="map" id="map"></div>
+      <div class="legend">
+        <span style="--c:var(--idea)">idea</span><span style="--c:var(--building)">building</span><span style="--c:var(--live)">live</span><span style="--c:var(--shelved)">shelved (paused)</span>
+      </div>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="shelf" id="shelf"></div>
+  </section>
+
+  <section id="v2" hidden>
+    <div class="card">
+      <textarea id="jt" placeholder="What happened today in the build?"></textarea>
+      <input id="jg" maxlength="2" placeholder="Project code (optional, e.g. bn)" autocapitalize="none">
+      <img id="jimg" class="cv" hidden alt="" style="max-height:220px;object-fit:cover"><div class="row"><label class="btn g ph">📷<input type="file" id="jfile" accept="image/*" hidden></label><button class="btn" id="ja">Add to journey</button></div>
+    </div>
+    <div id="jl"></div>
+  </section>
+  <section id="v3" hidden>
+    <p class="sub">Tap a card to save it.</p>
+    <div class="tabs" id="thm"><button data-th="black" class="on">Black</button><button data-th="white">White</button></div>
+    <div class="card" style="padding:12px">
+      <div class="row"><label class="btn g" style="flex:1;text-align:center;cursor:pointer">🖼 Background image<input type="file" id="bgf" accept="image/*" hidden></label><button class="btn g" id="bgx">Remove</button></div>
+      <label for="bgo" style="display:block;font-size:13px;color:var(--mu);margin-top:12px">Image opacity: <b id="bgv">40</b>%</label>
+      <input type="range" id="bgo" min="5" max="100" value="40" style="padding:0;border:0;margin:6px 0 0">
+    </div>
+    <canvas id="c1" hidden></canvas><img class="cv" id="i1" alt="Story card" style="cursor:pointer">
+    <div class="row" style="margin-bottom:22px"><button class="btn" id="d1">Download story (1080×1920)</button></div>
+    <canvas id="c2" hidden></canvas><img class="cv" id="i2" alt="Post card" style="cursor:pointer">
+    <div class="row"><button class="btn" id="d2">Download post (1080×1350)</button></div>
+    <div class="card" style="padding:12px;margin-top:22px">
+      <h3 style="margin:0 0 4px">Backup &amp; restore</h3>
+      <p class="sub" style="margin:0 0 10px">Everything (drawers, fixes, journey, photos) in one JSON file. Export before you update or switch phones, import to bring it all back.</p>
+      <div class="row"><button class="btn" id="bkx">Export backup</button><label class="btn g" style="cursor:pointer;text-align:center">Import<input type="file" id="bki" accept=".json,application/json" hidden></label></div>
+    </div>
+  </section>
+  <p class="note" id="note"></p>
+  <div class="toast" id="toast" hidden><button id="tg">Get today’s cards →</button></div>
+  <div class="sheet" id="lb" style="align-items:center;padding:16px"><div style="text-align:center;color:#fff"><img id="big" alt="card" style="max-width:100%;max-height:78vh;border-radius:12px"><p>Press and hold the image to save it. Tap outside to close.</p></div></div>
+</main>
+
+<div class="sheet" id="sheet">
+  <div class="panel">
+    <h2 id="ph"></h2>
+    <div class="tabs" id="ptabs"><button data-p="about" class="on">About</button><button data-p="fixes">Fixes</button><button data-p="feed">Feed</button></div>
+    <div id="pa">
+    <input id="pn" placeholder="Project name (e.g. Learn chess, Final year project)">
+    <input id="pl" placeholder="Link (site, repo, doc…)" autocapitalize="none" inputmode="url">
+    <a id="po" class="btn" target="_blank" rel="noopener noreferrer" style="display:none;text-align:center;text-decoration:none;margin-bottom:10px">Open link ↗</a>
+    <div class="st" id="pst"></div>
+    <textarea id="pf" placeholder="Description: what it does, who it’s for, the stack, anything future-you should know."></textarea></div>
+    <div id="pfx" hidden>
+      <div id="fl"></div>
+      <div class="row" style="margin:12px 0 4px"><input id="fi" placeholder="Add a fix…" style="margin:0"><button class="btn g" id="fa">Add</button></div>
+    </div>
+    <div id="pfd" hidden>
+      <textarea id="pt" placeholder="Post an update on this build…" style="min-height:70px"></textarea>
+      <img id="pimg" class="cv" hidden alt="" style="max-height:220px;object-fit:cover">
+      <div class="row"><label class="btn g ph">📷 Photo<input type="file" id="pfile" accept="image/*" hidden></label><button class="btn" id="pp">Post</button></div>
+      <div id="pfeed" style="margin-top:18px"></div>
+    </div>
+    <div class="row"><button class="btn g" id="pc">Close</button><button class="btn g" id="px">Empty drawer</button><button class="btn" id="ps">Save</button></div>
+  </div>
+</div>
+
+<script>
+/* Standalone shim: the original page ran inside claude.ai. In the APK, data is saved on the phone. */
+window.claude=window.claude||{use:async function(name){
+  if(name==="assets")return{upload:async function(){throw new Error("local")}};
+  if(name==="downloads")return{save:async function(o){
+    var C=window.Capacitor&&window.Capacitor.Plugins;
+    if(!C||!C.Filesystem||!C.Share)throw new Error("nodl");
+    var d=await new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(String(r.result).split(",")[1])};r.onerror=rej;r.readAsDataURL(o.data)});
+    var w=await C.Filesystem.writeFile({path:o.filename,data:d,directory:"CACHE"});
+    await C.Share.share({title:o.filename,files:[w.uri]});
+  }};
+  return null;
+}};
+</script>
+<script>
+const L="abcdefghijklmnopqrstuvwxyz".split("");
+const ST=["idea","building","live","shelved"];
+let S={slots:{},journey:[]},cur="a",ed=null,edSt="building",store=null,saveT=null;
+const $=id=>document.getElementById(id);
+
+(async()=>{try{if(!await claude.use("assets"))document.body.classList.add("noimg")}catch(e){document.body.classList.add("noimg")}})();
+function lsGet(){try{return JSON.parse(localStorage.getItem("cupboard")||"null")}catch(e){return null}}
+function lsSet(){try{localStorage.setItem("cupboard",JSON.stringify(S))}catch(e){}}
+
+async function init(){
+  render();
+  try{
+    const db=await claude.use("db"),user=await claude.use("user");
+    if(db&&user){
+      const id=await user.id();
+      if(id){
+        const col=db.collection("data/users/"+id);colRef=col;
+        store={
+          async load(){const a=await col.doc("slots").get(),b=await col.doc("journey").get();
+            return{slots:(a.exists&&a.data().map)||{},journey:(b.exists&&b.data().list)||[]}},
+          async save(){await col.doc("slots").set({map:S.slots});await col.doc("journey").set({list:S.journey})}
+        };
+        S=await store.load();$("note").textContent="Saved privately to your account.";render();return;
+      }
+    }
+  }catch(e){}
+  const l=lsGet();if(l)S=l;
+  $("note").textContent="Saving on this device only.";render();
+}
+function persist(){
+  clearTimeout(saveT);
+  saveT=setTimeout(async()=>{if(store){try{await store.save()}catch(e){$("note").textContent="Couldn’t save. Try again."}}else lsSet()},400);
+}
+function code(a,b){return a+b}
+function render(){
+  const n=Object.keys(S.slots).length;
+  const c={idea:0,building:0,live:0,shelved:0};
+  Object.values(S.slots).forEach(s=>c[s.status]!=null&&c[s.status]++);
+  $("stats").innerHTML=`<span><b>${n}</b> / 676 filled</span><span><b>${c.building}</b> building</span><span><b>${c.live}</b> live</span><span><b>${676-n}</b> to go</span>`;
+  $("bar").style.width=(n/676*100)+"%";
+  let m="";
+  L.forEach(a=>L.forEach(b=>{const k=a+b,s=S.slots[k];m+=`<button data-k="${k}" aria-label="${k}" class="${s?"s-"+s.status:""}${k[0]===cur?" ":""}"></button>`}));
+  $("map").innerHTML=m;
+  $("chips").innerHTML=L.map(a=>{const cnt=L.filter(b=>S.slots[a+b]).length;return`<button data-l="${a}" class="${a===cur?"on":""}">${a}<small>${cnt}/26</small></button>`}).join("");
+  $("shelf").innerHTML=L.map(b=>{const k=cur+b,s=S.slots[k];
+    return s?`<button class="slot f" data-k="${k}" style="--c:var(--${s.status})"><b>${k}</b><span>${s.link?"🔗 ":""}${esc(s.name||s.status)}</span></button>`
+            :`<button class="slot empty" data-k="${k}"><b>${k}</b><span>empty</span></button>`}).join("");
+  renderJ();
+}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function renderJ(){
+  const j=[...S.journey].sort((a,b)=>b.t-a.t);
+  $("jl").innerHTML=j.length?j.map(e=>`<div class="e"><time>${new Date(e.t).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})}</time>
+    <p>${e.tag?`<button class="tag" data-k="${esc(e.tag)}">${esc(e.tag)}</button>`:""}${esc(e.text)}</p>${e.img?imgTag(e.img):""}<button class="x" data-d="${e.t}">delete</button></div>`).join(""):`<p class="sub">Nothing here yet. Write the first entry.</p>`;
+}
+function openEd(k){
+  ed=k;const s=S.slots[k]||{};edSt=s.status||"building";
+  $("ph").textContent=k;$("pn").value=s.name||"";$("pf").value=s.desc||s.notes||"";edFix=(s.fixes||[]).map(f=>({...f}));pend=null;$("pimg").hidden=true;$("pt").value="";pTab("about");
+  $("pl").value=s.link||"";showLink();drawSt();$("sheet").classList.add("show");
+}
+function drawSt(){$("pst").innerHTML=ST.map(x=>`<button data-s="${x}" style="--c:var(--${x})" class="${x===edSt?"on":""}">${x}</button>`).join("")}
+function fixUrl(u){u=u.trim();if(!u)return"";if(!/^https?:\/\//i.test(u))u="https://"+u;return /^https?:\/\/[^\s.]+\.[^\s]+$/i.test(u)?u:""}
+function showLink(){const u=fixUrl($("pl").value),a=$("po");a.style.display=u?"block":"none";if(u)a.href=u}
+function closeEd(){$("sheet").classList.remove("show");ed=null}
+
+document.addEventListener("click",e=>{
+  const t=e.target.closest("button");if(!t)return;
+  if(/^t[123]$/.test(t.id)){tab(t.id);return}
+  if(t.dataset.p){pTab(t.dataset.p);return}
+  if(t.id==="bgx"){bgImg=null;cards();return}
+  if(t.dataset.th){cardTheme=t.dataset.th;document.querySelectorAll("#thm button").forEach(b=>b.classList.toggle("on",b===t));cards();return}
+  if(t.id==="fa"){const v=$("fi").value.trim();if(!v)return;edFix.push({id:String(Date.now()),text:v,done:false});$("fi").value="";commitFix();fixes();return}
+  if(t.dataset.ft){const f=edFix.find(f=>f.id===t.dataset.ft);f.done=!f.done;if(f.done){S.journey.push({t:Date.now(),text:"Fixed: "+f.text,tag:ed,img:""});renderJ()}commitFix();fixes();return}
+  if(t.dataset.fd){edFix=edFix.filter(f=>f.id!==t.dataset.fd);commitFix();fixes();return}
+  if(t.id==="pp"){const text=$("pt").value.trim();if(!text&&!pend)return;S.journey.push({t:Date.now(),text,tag:ed,img:pend||""});$("pt").value="";pend=null;$("pimg").hidden=true;persist();renderJ();feed();return}
+  if(t.id==="tg"){$("toast").hidden=true;closeEd();tab("t3");window.scrollTo(0,0);return}
+  if(t.id==="d1"){dl2($("c1"),"story");return}
+  if(t.id==="d2"){dl2($("c2"),"post");return}
+  if(t.dataset.l){cur=t.dataset.l;render();return}
+  if(t.dataset.k){const k=t.dataset.k;if(k.length===2){if(/^[a-z]{2}$/.test(k)){cur=k[0]}openEd(k);if(!$("v1").hidden)render()}return}
+  if(t.dataset.s){edSt=t.dataset.s;drawSt();return}
+  if(t.dataset.d){S.journey=S.journey.filter(x=>String(x.t)!==t.dataset.d);persist();renderJ();if(ed)feed();return}
+  if(t.id==="pc"){closeEd();return}
+  if(t.id==="px"){delete S.slots[ed];persist();closeEd();render();return}
+  if(t.id==="ps"){S.slots[ed]={name:$("pn").value.trim(),status:edSt,desc:$("pf").value.trim(),fixes:edFix,link:fixUrl($("pl").value)};persist();closeEd();render();return}
+  if(t.id==="ja"){
+    const text=$("jt").value.trim(),tag=$("jg").value.trim().toLowerCase();
+    if(!text&&!pendJ)return;
+    S.journey.push({t:Date.now(),text,tag:/^[a-z]{2}$/.test(tag)?tag:"",img:pendJ||""});
+    $("jt").value="";$("jg").value="";pendJ=null;$("jimg").hidden=true;persist();renderJ();
+  }
+});
+$("sheet").addEventListener("click",e=>{if(e.target===$("sheet"))closeEd()});
+function tab(id){["t1","t2","t3"].forEach((k,i)=>{$(k).classList.toggle("on",k===id);$("v"+(i+1)).hidden=k!==id});if(id==="t3")cards()}
+let toastT;function toast(){const t=$("toast");t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,9000)}
+const COL={idea:"#f5b942",building:"#5b95ff",live:"#2dd4a7",shelved:"#7a8391"};
+function rr(x,a,b,w,h,r){x.beginPath();x.roundRect?x.roundRect(a,b,w,h,r):x.rect(a,b,w,h)}
+function lines(x,t,mw,max){const o=[];let l="";for(const k of t.split(/\s+/)){const tt=l?l+" "+k:k;if(x.measureText(tt).width>mw&&l){o.push(l);l=k}else l=tt}if(l)o.push(l);if(o.length>max){o.length=max;o[max-1]=o[max-1].replace(/\s*\S*$/,"")+"…"}return o}
+function draw(c,story){
+  const W=1080,H=story?1920:1350,P=story?110:70,F="system-ui,-apple-system,Segoe UI,Roboto,sans-serif";
+  c.width=W;c.height=H;const x=c.getContext("2d");
+  const mp=cardTheme==="white"?{"#0b0d11":"#ffffff","#eceff4":"#000000","#8a93a3":"#5b6472","#1b212b":"#e6e9ee"}:{"#0b0d11":"#000000"},pd=Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype,"fillStyle");
+  Object.defineProperty(x,"fillStyle",{get(){return pd.get.call(x)},set(v){pd.set.call(x,mp[v]||v)}});
+  x.fillStyle="#0b0d11";x.fillRect(0,0,W,H);
+  if(bgImg){x.save();x.globalAlpha=bgOp;const s=Math.max(W/bgImg.width,H/bgImg.height),w=bgImg.width*s,h=bgImg.height*s;x.drawImage(bgImg,(W-w)/2,(H-h)/2,w,h);x.restore()}
+  
+  const n=Object.keys(S.slots).length,cnt={idea:0,building:0,live:0,shelved:0};
+  Object.values(S.slots).forEach(s=>cnt[s.status]!=null&&cnt[s.status]++);
+  let y=story?300:100;
+  x.fillStyle="#8a93a3";x.font="600 34px "+F;x.fillText("THE CUPBOARD",P,y);
+  y+=story?150:130;
+  x.fillStyle="#eceff4";x.font="800 "+(story?160:170)+"px "+F;x.fillText(String(n),P,y);
+  const nw=x.measureText(String(n)).width;x.fillStyle="#8a93a3";x.font="600 56px "+F;x.fillText("/ 676 projects",P+nw+22,y);
+  y+=50;
+  x.fillStyle="#1b212b";rr(x,P,y,W-2*P,18,9);x.fill();
+  x.fillStyle="#2dd4a7";rr(x,P,y,Math.max(18,(W-2*P)*n/676),18,9);x.fill();
+  y+=story?60:70;
+  const MW=story?W-2*P:640,cs=MW/26;
+  for(let i=0;i<26;i++)for(let j=0;j<26;j++){const s=S.slots[L[i]+L[j]];x.fillStyle=s?COL[s.status]:"#1b212b";rr(x,P+j*cs+2,y+i*cs+2,cs-4,cs-4,6);x.fill()}
+  const names=["idea","building","live","shelved"];
+  if(story){
+    let sy=y+MW+90;
+    names.forEach((k,i)=>{const sx=P+i*235;x.fillStyle=COL[k];rr(x,sx,sy-34,20,20,6);x.fill();x.fillStyle="#eceff4";x.font="800 52px "+F;x.fillText(String(cnt[k]),sx+34,sy-12);x.fillStyle="#8a93a3";x.font="500 28px "+F;x.fillText(k,sx,sy+34)});
+    
+  }else{
+    names.forEach((k,i)=>{const sx=P+MW+60,sy=y+60+i*90;x.fillStyle=COL[k];rr(x,sx,sy-26,22,22,6);x.fill();x.fillStyle="#eceff4";x.font="800 50px "+F;x.fillText(String(cnt[k]),sx+38,sy-4);x.fillStyle="#8a93a3";x.font="500 28px "+F;x.fillText(k,sx+38+x.measureText(String(cnt[k])).width*0+70,sy-6)});
+    
+  }
+  
+  
+  
+  
+  
+  x.fillStyle="#8a93a3";x.font="500 34px "+F;
+  x.fillText(new Date().toLocaleString([], {dateStyle:"medium",timeStyle:"short"}),P,story?1620:H-80);
+}
+function cards(){draw($("c1"),true);draw($("c2"),false);$("i1").src=$("c1").toDataURL("image/png");$("i2").src=$("c2").toDataURL("image/png")}
+function dl(c,kind){
+  c.toBlob(async b=>{
+    try{const d=await claude.use("downloads");if(!d)throw 0;await d.save({filename:"cupboard-"+kind+"-"+new Date().toISOString().slice(0,10)+".png",data:b})}
+    catch(e){$("big").src=c.toDataURL("image/png");$("lb").classList.add("show")}
+  },"image/png");
+}
+let edFix=[],pend=null,pendJ=null;
+function pTab(p){document.querySelectorAll("#ptabs button").forEach(b=>b.classList.toggle("on",b.dataset.p===p));$("pa").hidden=p!=="about";$("pfx").hidden=p!=="fixes";$("pfd").hidden=p!=="feed";if(p==="fixes")fixes();if(p==="feed")feed()}
+function fixes(){$("fl").innerHTML=edFix.length?edFix.map(f=>`<div class="fx"><button class="ck${f.done?" on":""}" data-ft="${f.id}">${f.done?"✓":""}</button><span class="${f.done?"dn":""}">${esc(f.text)}</span><button class="x" data-fd="${f.id}">✕</button></div>`).join(""):`<p class="sub">No fixes logged for this project yet.</p>`}
+function commitFix(){let s=S.slots[ed];if(!s)s=S.slots[ed]={name:$("pn").value.trim(),status:edSt,desc:$("pf").value.trim(),link:fixUrl($("pl").value)};s.fixes=edFix;persist();render()}
+function feed(){const j=S.journey.filter(e=>e.tag===ed).sort((a,b)=>b.t-a.t);$("pfeed").innerHTML=j.length?j.map(e=>`<div class="e"><time>${new Date(e.t).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})}</time><p>${esc(e.text)}</p>${e.img?imgTag(e.img):""}<button class="x" data-d="${e.t}">delete</button></div>`).join(""):`<p class="sub">No posts yet. Start this project’s timeline. Journey entries tagged with this code show up here too.</p>`}
+function shrink(f,m,q){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>{const s=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext("2d").drawImage(im,0,0,c.width,c.height);c.toBlob(b=>b?res(b):rej(new Error("image conversion failed")),"image/jpeg",q)};im.onerror=()=>rej(new Error("couldn’t read that image"));im.src=URL.createObjectURL(f)})}
+
+async function up(ev,prev,set){
+  const f=ev.target.files[0];ev.target.value="";if(!f)return;
+  $("note").textContent="Uploading…";
+  try{
+    let id,url;
+    try{const a=await claude.use("assets");if(!a)throw 0;const r=await a.upload(await shrink(f,1200,.85));id=r.id;url=r.url}
+    catch(e1){const d=await dataUrl(await shrink(f,700,.65));id="d"+Date.now();if(colRef)await colRef.doc("img_"+id).set({d});else localStorage.setItem("img_"+id,d);imgC[id]=d;url=d}
+    set(id);prev.src=url;prev.hidden=false;$("note").textContent="";
+  }catch(e){$("note").textContent="Couldn’t upload: "+((e&&(e.message||e.code))||"photo storage isn’t available here")}
+}
+let colRef=null,imgC={},cardTheme="black",bgImg=null,bgOp=.4;
+function dataUrl(b){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(b)})}
+function imgTag(id){return id[0]!=="d"?`<img class="cv" src="/_blob/${id}" loading="lazy" alt="">`:`<img class="cv" data-did="${id}" src="${imgC[id]||""}" alt="">`}
+async function hydrate(){for(const im of document.querySelectorAll("img[data-did]")){const id=im.dataset.did;if(imgC[id]){im.src=imgC[id];continue}try{if(colRef){const s=await colRef.doc("img_"+id).get();if(s.exists){imgC[id]=s.data().d;im.src=imgC[id]}}else{const v=localStorage.getItem("img_"+id);if(v){imgC[id]=v;im.src=v}}}catch(e){}}}
+const _rj=renderJ,_fd=feed;renderJ=function(){_rj();hydrate()};feed=function(){_fd();hydrate()};
+function dl2(c,kind){
+  c.toBlob(async b=>{
+    const fn="cupboard-"+kind+"-"+new Date().toISOString().slice(0,10)+".png";
+    try{const d=await claude.use("downloads");if(!d)throw 0;try{await d.save({filename:fn,data:b});return}catch(e){if(e&&e.code==="declined")return;const j=await new Promise(r=>c.toBlob(r,"image/jpeg",.92));await d.save({filename:fn.replace(".png",".jpg"),data:j});return}}catch(e){if(e&&e.code==="declined")return;$("note").textContent="Download blocked ("+((e&&e.code)||"unavailable")+"). Trying share…"}
+    try{const f=new File([b],fn,{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(e){if(e&&e.name==="AbortError")return}
+    $("big").src=c.toDataURL("image/png");$("lb").classList.add("show");
+  },"image/png");
+}
+$("pfile").addEventListener("change",ev=>up(ev,$("pimg"),id=>pend=id));
+$("jfile").addEventListener("change",ev=>up(ev,$("jimg"),id=>pendJ=id));
+$("bgf").addEventListener("change",ev=>{const f=ev.target.files[0];ev.target.value="";if(!f)return;const im=new Image();im.onload=()=>{bgImg=im;cards()};im.onerror=()=>{$("note").textContent="Couldn’t read that image."};im.src=URL.createObjectURL(f)});
+$("bgo").addEventListener("input",ev=>{bgOp=ev.target.value/100;$("bgv").textContent=ev.target.value;cards()});
+$("i1").addEventListener("click",()=>dl2($("c1"),"story"));$("i2").addEventListener("click",()=>dl2($("c2"),"post"));
+$("lb").addEventListener("click",()=>$("lb").classList.remove("show"));
+$("pl").addEventListener("input",showLink);
+function saveFile(blob,fn){
+  return (async()=>{
+    try{const d=await claude.use("downloads");if(!d)throw 0;await d.save({filename:fn,data:blob});return}catch(e){if(e&&e.code==="declined")return}
+    const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);
+  })();
+}
+async function exportBackup(){
+  try{
+    const imgs={};
+    const ids=new Set();S.journey.forEach(e=>e.img&&ids.add(e.img));
+    for(const id of ids){if(id[0]!=="d")continue;let v=imgC[id]||null;try{if(!v&&colRef){const r=await colRef.doc("img_"+id).get();if(r.exists)v=r.data().d}}catch(e){}try{if(!v)v=localStorage.getItem("img_"+id)}catch(e){}if(v)imgs[id]=v}
+    const data={app:"the-cupboard",version:1,exported:new Date().toISOString(),slots:S.slots,journey:S.journey,images:imgs};
+    await saveFile(new Blob([JSON.stringify(data)],{type:"application/json"}),"cupboard-backup-"+new Date().toISOString().slice(0,10)+".json");
+    $("note").textContent="Backup exported.";
+  }catch(e){$("note").textContent="Couldn’t export: "+(e&&e.message||e)}
+}
+function importBackup(ev){
+  const f=ev.target.files[0];ev.target.value="";if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const d=JSON.parse(r.result);
+      if(!d||d.app!=="the-cupboard"||typeof d.slots!=="object"||!Array.isArray(d.journey))throw new Error("not a Cupboard backup");
+      const n=Object.keys(d.slots).length;
+      if(!confirm("Replace what is in the app now with this backup ("+n+" drawers, "+d.journey.length+" journey entries)?"))return;
+      S={slots:d.slots,journey:d.journey};
+      const im=d.images||{};
+      for(const id in im){imgC[id]=im[id];try{if(colRef)colRef.doc("img_"+id).set({d:im[id]});else localStorage.setItem("img_"+id,im[id])}catch(e){}}
+      if(store){store.save().catch(()=>{})}else lsSet();
+      render();$("note").textContent="Backup imported.";
+    }catch(e){$("note").textContent="Couldn’t import: "+(e&&e.message||e)}
+  };
+  r.onerror=()=>{$("note").textContent="Couldn’t read that file."};
+  r.readAsText(f);
+}
+$("bkx").addEventListener("click",exportBackup);
+$("bki").addEventListener("change",importBackup);
+init();
+</script>
+</body>
+</html>

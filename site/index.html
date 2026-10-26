@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Cupboard</title>
+<style>
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b0d11;color:#eceff4;font:16px/1.5 system-ui,sans-serif;padding:20px}
+main{max-width:420px;text-align:center}
+h1{margin:0 0 6px;font-size:32px}p{color:#8a93a3}
+a.b{display:block;background:#2dd4a7;color:#04231b;font-weight:800;text-decoration:none;padding:16px;border-radius:14px;margin:22px 0 10px}
+small{color:#8a93a3;display:block}
+</style></head><body><main>
+<h1>The Cupboard</h1>
+<p>676 possible two-letter projects. Fill every drawer.</p>
+<a class="b" id="dl" href="#">Download the APK</a>
+<small id="v"></small>
+<small style="margin-top:14px">Install over the old version to keep your data. Export a backup first (Share tab) to be safe.</small>
+<script>
+var host=location.hostname.split("."),owner=host[0],repo=location.pathname.split("/").filter(Boolean)[0]||"";
+var base="https://github.com/"+owner+"/"+repo;
+document.getElementById("dl").href=base+"/releases/latest/download/TheCupboard.apk";
+fetch("https://api.github.com/repos/"+owner+"/"+repo+"/releases/latest").then(function(r){return r.json()}).then(function(j){
+  if(j&&j.name)document.getElementById("v").textContent="Latest: "+j.name+" · "+new Date(j.published_at).toLocaleDateString()
+}).catch(function(){});
+</script></main></body></html>
